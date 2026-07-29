@@ -1,0 +1,48 @@
+# Preliminares 
+
+rm(list = ls())
+
+# Cargar documento
+library(readxl)
+
+datos<- read_excel("Downloads/P_Data_Extract_From_World_Development_Indicators.xlsx")
+
+head(datos)
+
+library(dplyr)
+
+paises_latam <- c("ARG", "BOL", "BRA", "CHL", "COL", "CRI", "CUB", "DOM",
+                  "ECU", "SLV", "GTM", "HTI", "HND", "MEX", "NIC", "PAN",
+                  "PRY", "PER", "URY", "VEN", "BLZ", "GUY", "SUR", "TTO")
+
+cols_mantener <- c("Country Name", "Country Code", "Series Name", "Series Code",
+                   names(datos)[grepl("201[4-9]|202[0-4]", names(datos))])
+
+datos_latam <- datos |>
+  filter(`Country Code` %in% paises_latam) |>
+  select(all_of(cols_mantener))
+
+datos_latam
+
+library(dplyr)
+library(tidyr)
+
+# Convertir ".." a NA y años a numérico
+datos_latam_num <- datos_latam |>
+  mutate(across(starts_with("20"), ~ na_if(.x, "..") |> as.numeric()))
+
+# Estadísticas descriptivas de las columnas numéricas
+datos_latam_num |>
+  select(starts_with("20")) |>
+  pivot_longer(everything(), names_to = "anio", values_to = "valor") |>
+  group_by(anio) |>
+  summarise(
+    n        = sum(!is.na(valor)),
+    media    = mean(valor, na.rm = TRUE),
+    mediana  = median(valor, na.rm = TRUE),
+    de       = sd(valor, na.rm = TRUE),
+    minimo   = min(valor, na.rm = TRUE),
+    maximo   = max(valor, na.rm = TRUE),
+    pct_na   = round(mean(is.na(valor)) * 100, 1)
+  )
+
