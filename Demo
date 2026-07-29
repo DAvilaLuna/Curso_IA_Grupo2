@@ -59,3 +59,4 @@ datos_latam_num |>
   select(`Country Name`, promedio_gini) |>
   arrange(desc(promedio_gini)) |>
   print(n = Inf)
+#Solo crea una tabla de 3*4#
