@@ -45,4 +45,17 @@ datos_latam_num |>
     maximo   = max(valor, na.rm = TRUE),
     pct_na   = round(mean(is.na(valor)) * 100, 1)
   )
-
+datos_latam_num |>
+  filter(`Series Name` == "Gini index") |>
+  rowwise() |>
+  mutate(promedio_gini = mean(c_across(starts_with("20")), na.rm = TRUE)) |>
+  ungroup() |>
+  select(`Country Name`, promedio_gini) |>
+  arrange(desc(promedio_gini))datos_latam_num |>
+  filter(`Series Name` == "Gini index") |>
+  rowwise() |>
+  mutate(promedio_gini = mean(c_across(starts_with("20")), na.rm = TRUE)) |>
+  ungroup() |>
+  select(`Country Name`, promedio_gini) |>
+  arrange(desc(promedio_gini)) |>
+  print(n = Inf)
